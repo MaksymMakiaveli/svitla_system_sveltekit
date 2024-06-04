@@ -1,59 +1,111 @@
-<script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+<script lang="ts">
+	import BingLogo from '$lib/images/bing-logo.svg';
+
+	let card: HTMLDivElement;
+
+	function handleMouseMove(event: MouseEvent) {
+		requestAnimationFrame(() => {
+			const cardRect = card.getBoundingClientRect();
+			const cardX = cardRect.left + cardRect.width / 2;
+			const cardY = cardRect.top + cardRect.height / 2;
+			const angleX = (event.clientY - cardY) / 10;
+			const angleY = (event.clientX - cardX) / -10;
+
+			card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+			card.style.boxShadow = `${angleY * 2}px ${angleX * 2}px 30px rgba(0, 0, 0, 0.3)`;
+		});
+	}
+
+	function handleMouseLeave() {
+		card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+		card.style.boxShadow = `0 10px 20px rgba(0, 0, 0, 0.1)`;
+	}
 </script>
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<title>Gradient BG Logo</title>
+	<meta name="description" content="Gradient BG Logo" />
 </svelte:head>
 
-<section>
-	<h1>
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcome_fallback} alt="Welcome" />
-			</picture>
-		</span>
-
-		to your new<br />SvelteKit app
-	</h1>
-
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
-
-	<Counter />
+<section class="container">
+	<div
+		role="banner"
+		class="badge"
+		bind:this={card}
+		on:mousemove={handleMouseMove}
+		on:mouseleave={handleMouseLeave}
+	>
+		<div class="badge-layer">
+			<img src={BingLogo} alt="Bing" class="logo" />
+			<span>Bing</span>
+		</div>
+	</div>
 </section>
 
 <style>
-	section {
+	.container {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		flex: 0.6;
+
+		height: 100%;
+
+		perspective: 1500px;
 	}
 
-	h1 {
-		width: 100%;
-	}
-
-	.welcome {
-		display: block;
+	.badge {
+		--size: clamp(280px, 58vw, 420px);
 		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
+
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		width: var(--size);
+		height: var(--size);
+
+		padding: 12px;
+
+		background-color: #fff;
+		border-radius: 30%;
+		box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+		transition:
+			transform 0.1s ease-out,
+			box-shadow 0.1s ease-out;
+		transform-style: preserve-3d;
 	}
 
-	.welcome img {
+	.badge-layer {
 		position: absolute;
+
 		width: 100%;
 		height: 100%;
-		top: 0;
-		display: block;
+
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		gap: 24px;
+
+		transform: translateZ(20px);
+		background: rgba(255, 255, 255, 0.9);
+		border-radius: 30%;
+		transition: opacity 0.2s ease-out;
+	}
+
+	.logo {
+		width: 32%;
+		height: 46%;
+
+		object-fit: contain;
+	}
+
+	.badge span {
+		font-size: 32px;
+		line-height: 26px;
+		font-weight: 300;
 	}
 </style>
